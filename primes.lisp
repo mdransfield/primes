@@ -42,6 +42,9 @@
         when (eql 1 (bit sieve i)) collect i))
 
 (defun primes-upto (n)
+  "List of all prime numbers below N.
+Uses the Sieve of Atkin pseudocode from
+http://en.wikipedia.org/wiki/Sieve_of_Atkin."
   (collect-primes (make-sieve n)))
 
 (defun primep (n)
