@@ -37,6 +37,9 @@
 	  (bit sieve 3) 1)
     sieve))
 
+(defun sieve-prime-p (n sieve)
+  (= 1 (bit sieve n)))
+
 (defun collect-primes (sieve)
   (loop for i from 1 below (length sieve)
         when (eql 1 (bit sieve i)) collect i))
@@ -78,19 +81,26 @@ http://en.wikipedia.org/wiki/Sieve_of_Atkin."
      while (= 0 (mod n 2))
      finally (return (values c n))))
 
-(defun miller-rabin-prime-p (n &optional (k 5))
-  (when (= 2 n) t)
-  (unless (oddp n) nil)
-  (multiple-value-bind (s d) (decompose (1- n))
-    (loop named outer
-       with n-minus-1 = (1- n)
-       repeat k
-       for a = (+ 2 (random (- n 4)))
-       for x = (expt-mod a d n)
-       unless (or (= x 1) (= x n-minus-1))
-       do (loop for r from 1 below s
-	     do (setf x (expt-mod x 2 n))
-	     if (= x 1) do (return-from outer nil)
-	     if (= x n-minus-1) return nil
-	     finally (return-from outer nil))
-       finally (return-from outer t))))
+(defun miller-rabin-prime-p (n &optional (k 40))
+  (cond
+    ((or (= 2 n) (= 3 n))
+     t)
+    ((evenp n)
+     nil)
+    (t
+     (multiple-value-bind (s d) (decompose (1- n))
+       (loop named outer
+	     with n-minus-1 = (1- n)
+	     repeat k
+	     for a = (+ 2 (random (- n 4)))
+	     for x = (expt-mod a d n)
+	     unless (or (= x 1) (= x n-minus-1))
+	       do (loop for r from 1 below s
+			do (setf x (expt-mod x 2 n))
+			if (= x 1)
+			  do (return-from outer nil)
+			if (= x n-minus-1)
+			  return nil
+			finally
+			   (return-from outer nil))
+	     finally (return-from outer t))))))

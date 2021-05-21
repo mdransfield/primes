@@ -5,5 +5,7 @@
   (:use #:cl)
   (:export #:primes-upto
 	   #:primep
-	   #:miller-rabin-prime-p))
+	   #:miller-rabin-prime-p
+	   #:make-sieve
+	   #:sieve-prime-p))
 
